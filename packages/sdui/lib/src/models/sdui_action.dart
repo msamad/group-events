@@ -3,7 +3,9 @@ class SduiAction {
     required this.id,
     required this.label,
     required this.type,
-    this.route,
+    this.endpoint,
+    this.confirm = false,
+    this.visible = true,
     this.payload = const <String, Object?>{},
   });
 
@@ -12,7 +14,9 @@ class SduiAction {
       id: json['id'] as String,
       label: json['label'] as String,
       type: json['type'] as String,
-      route: json['route'] as String?,
+      endpoint: (json['endpoint'] ?? json['route']) as String?,
+      confirm: (json['confirm'] as bool?) ?? false,
+      visible: (json['visible'] as bool?) ?? true,
       payload: _readObjectMap(json['payload']),
     );
   }
@@ -20,7 +24,9 @@ class SduiAction {
   final String id;
   final String label;
   final String type;
-  final String? route;
+  final String? endpoint;
+  final bool confirm;
+  final bool visible;
   final Map<String, Object?> payload;
 
   Map<String, Object?> toJson() {
@@ -28,7 +34,9 @@ class SduiAction {
       'id': id,
       'label': label,
       'type': type,
-      if (route != null) 'route': route,
+      if (endpoint != null) 'endpoint': endpoint,
+      'confirm': confirm,
+      'visible': visible,
       if (payload.isNotEmpty) 'payload': payload,
     };
   }

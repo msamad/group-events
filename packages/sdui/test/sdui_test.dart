@@ -6,13 +6,14 @@ import 'package:sdui/sdui.dart';
 void main() {
   test('parses descriptor payloads into serializable models', () {
     final descriptor = SduiDescriptor.fromJson(const <String, Object?>{
-      'screenId': 'home',
+      'screen': 'home',
       'title': 'Home',
       'subtitle': 'Server payload',
       'components': <Map<String, Object?>>[
         <String, Object?>{
           'id': 'intro',
           'type': 'section',
+          'visible': true,
           'title': 'Intro',
           'body': 'Rendered from JSON',
         },
@@ -22,14 +23,15 @@ void main() {
           'id': 'refresh',
           'label': 'Refresh',
           'type': 'refresh',
-          'route': '/screen',
+          'endpoint': '/screen',
+          'visible': true,
         },
       ],
     });
 
-    expect(descriptor.screenId, 'home');
+    expect(descriptor.screen, 'home');
     expect(descriptor.components.single.title, 'Intro');
-    expect(descriptor.actions.single.route, '/screen');
+    expect(descriptor.actions.single.endpoint, '/screen');
     expect(descriptor.toJson()['title'], 'Home');
   });
 
@@ -56,32 +58,36 @@ void main() {
         home: Scaffold(
           body: SduiRenderer(
             descriptor: const SduiDescriptor(
-              screenId: 'home',
+              screen: 'home',
               title: 'Home',
               subtitle: 'Subtitle',
               components: <SduiComponent>[
                 SduiComponent(
                   id: 'list',
                   type: 'bullet_list',
+                  visible: true,
                   title: 'Checklist',
-                  props: <String, Object?>{
+                  data: <String, Object?>{
                     'items': <String>['Alpha', 'Beta'],
                   },
                 ),
                 SduiComponent(
                   id: 'stack',
                   type: 'stack',
+                  visible: true,
                   title: 'Nested',
                   children: <SduiComponent>[
                     SduiComponent(
                       id: 'child',
                       type: 'section',
+                      visible: true,
                       title: 'Child section',
                       actions: <SduiAction>[
                         SduiAction(
                           id: 'preview',
                           label: 'Preview',
                           type: 'noop',
+                          visible: true,
                         ),
                       ],
                     ),
@@ -89,7 +95,12 @@ void main() {
                 ),
               ],
               actions: <SduiAction>[
-                SduiAction(id: 'refresh', label: 'Refresh', type: 'refresh'),
+                SduiAction(
+                  id: 'refresh',
+                  label: 'Refresh',
+                  type: 'refresh',
+                  visible: true,
+                ),
               ],
             ),
             onAction: (action) {

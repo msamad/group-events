@@ -19,8 +19,14 @@ class SduiRenderer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final components = engine.resolveComponents(descriptor);
-    final actions = engine.resolveActions(descriptor);
+    final components = engine
+        .resolveComponents(descriptor)
+        .where((component) => component.visible)
+        .toList(growable: false);
+    final actions = engine
+        .resolveActions(descriptor)
+        .where((action) => action.visible)
+        .toList(growable: false);
     final theme = Theme.of(context);
 
     return Card(
@@ -77,9 +83,41 @@ class _SduiComponentNode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final items = _readItems(component.props['items']);
-    final emphasis = component.props['emphasis'] as String?;
+    final items = _readItems(component.data['items']);
+    final emphasis = component.data['emphasis'] as String?;
     final color = _surfaceColor(theme.colorScheme, emphasis);
+
+    if (component.type == 'text') {
+      return Text(
+        component.body ?? component.title ?? '',
+        style: theme.textTheme.bodyMedium,
+      );
+    }
+
+    if (component.type == 'badge') {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: Chip(
+          label: Text(component.title ?? component.body ?? component.id),
+        ),
+      );
+    }
+
+    if (component.type == 'button') {
+      final primaryAction =
+          component.actions.where((action) => action.visible).isNotEmpty
+          ? component.actions.where((action) => action.visible).first
+          : null;
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: ElevatedButton(
+          onPressed: primaryAction == null || onAction == null
+              ? null
+              : () => onAction!(primaryAction),
+          child: Text(component.title ?? primaryAction?.label ?? 'Action'),
+        ),
+      );
+    }
 
     if (!engine.supportsComponent(component)) {
       return _SduiContainer(
@@ -95,7 +133,7 @@ class _SduiComponentNode extends StatelessWidget {
       );
     }
 
-    return _SduiContainer(
+    final content = _SduiContainer(
       color: color,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,9 +159,13 @@ class _SduiComponentNode extends StatelessWidget {
               const SizedBox(height: 8),
             ],
           ],
-          if (component.children.isNotEmpty) ...[
+          if (component.children
+              .where((child) => child.visible)
+              .isNotEmpty) ...[
             const SizedBox(height: 12),
-            for (final child in component.children) ...[
+            for (final child in component.children.where(
+              (child) => child.visible,
+            )) ...[
               _SduiComponentNode(
                 component: child,
                 engine: engine,
@@ -132,11 +174,30 @@ class _SduiComponentNode extends StatelessWidget {
               const SizedBox(height: 12),
             ],
           ],
-          if (component.actions.isNotEmpty)
-            _SduiActionBar(actions: component.actions, onAction: onAction),
+          if (component.actions.where((action) => action.visible).isNotEmpty)
+            _SduiActionBar(
+              actions: component.actions
+                  .where((action) => action.visible)
+                  .toList(growable: false),
+              onAction: onAction,
+            ),
         ],
       ),
     );
+
+    if (component.type == 'card') {
+      return Card(child: content);
+    }
+
+    if (component.type == 'list' || component.type == 'bullet_list') {
+      return ListView(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [content],
+      );
+    }
+
+    return content;
   }
 }
 
@@ -173,7 +234,9 @@ class _SduiActionBar extends StatelessWidget {
         for (final action in actions)
           FilledButton.tonal(
             onPressed: onAction == null ? null : () => onAction!(action),
-            child: Text(action.label),
+            child: Text(
+              action.confirm ? '${action.label} (confirm)' : action.label,
+            ),
           ),
       ],
     );

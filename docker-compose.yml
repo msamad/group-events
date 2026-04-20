@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: group-events-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: group_events
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d group_events"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: golang:1.24
+    container_name: group-events-backend
+    working_dir: /workspace/backend
+    command: sh -c "go mod download && go run ./cmd/api"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/group_events?sslmode=disable
+      PORT: "8080"
+      LOG_LEVEL: "info"
+    volumes:
+      - ./:/workspace
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pg-data:

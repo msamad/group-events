@@ -1,0 +1,33 @@
+{
+  "screen": "groups:list",
+  "title": "Groups",
+  "components": [
+    {
+      "id": "groups",
+      "type": "list",
+      "visible": true,
+      "data": {
+        "items": ["Platform", "Operations"]
+      }
+    },
+    {
+      "id": "status",
+      "type": "badge",
+      "visible": true,
+      "title": "Connected"
+    }
+  ],
+  "actions": [
+    {
+      "id": "create_event",
+      "label": "Create event",
+      "type": "POST",
+      "endpoint": "/api/v1/events",
+      "confirm": false,
+      "visible": true
+    }
+  ],
+  "navigation": {
+    "route": "/groups"
+  }
+}

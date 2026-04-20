@@ -19,10 +19,15 @@ class SduiEngine {
 
   bool supportsComponent(SduiComponent component) {
     switch (component.type) {
+      case 'badge':
       case 'bullet_list':
+      case 'button':
+      case 'card':
       case 'info_panel':
+      case 'list':
       case 'section':
       case 'stack':
+      case 'text':
         return true;
       default:
         return false;
