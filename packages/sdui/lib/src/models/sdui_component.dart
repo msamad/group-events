@@ -1,0 +1,81 @@
+import 'sdui_action.dart';
+
+class SduiComponent {
+  const SduiComponent({
+    required this.id,
+    required this.type,
+    this.title,
+    this.body,
+    this.props = const <String, Object?>{},
+    this.actions = const <SduiAction>[],
+    this.children = const <SduiComponent>[],
+  });
+
+  factory SduiComponent.fromJson(Map<String, Object?> json) {
+    return SduiComponent(
+      id: json['id'] as String,
+      type: json['type'] as String,
+      title: json['title'] as String?,
+      body: json['body'] as String?,
+      props: _readObjectMap(json['props']),
+      actions: _readObjectList(
+        json['actions'],
+      ).map(SduiAction.fromJson).toList(growable: false),
+      children: _readObjectList(
+        json['children'],
+      ).map(SduiComponent.fromJson).toList(growable: false),
+    );
+  }
+
+  final String id;
+  final String type;
+  final String? title;
+  final String? body;
+  final Map<String, Object?> props;
+  final List<SduiAction> actions;
+  final List<SduiComponent> children;
+
+  Map<String, Object?> toJson() {
+    return <String, Object?>{
+      'id': id,
+      'type': type,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (props.isNotEmpty) 'props': props,
+      if (actions.isNotEmpty)
+        'actions': actions
+            .map((action) => action.toJson())
+            .toList(growable: false),
+      if (children.isNotEmpty)
+        'children': children
+            .map((child) => child.toJson())
+            .toList(growable: false),
+    };
+  }
+}
+
+Map<String, Object?> _readObjectMap(Object? value) {
+  if (value is Map<String, Object?>) {
+    return value;
+  }
+
+  if (value is Map) {
+    return value.map((key, mapValue) => MapEntry(key.toString(), mapValue));
+  }
+
+  return const <String, Object?>{};
+}
+
+List<Map<String, Object?>> _readObjectList(Object? value) {
+  if (value is! List) {
+    return const <Map<String, Object?>>[];
+  }
+
+  return value
+      .whereType<Map>()
+      .map(
+        (entry) =>
+            entry.map((key, mapValue) => MapEntry(key.toString(), mapValue)),
+      )
+      .toList(growable: false);
+}
