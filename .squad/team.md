@@ -20,6 +20,13 @@
 | Scribe | Session Logger | .squad/agents/scribe/charter.md | Active |
 | Ralph | Work Monitor | .squad/agents/ralph/charter.md | Active |
 
+## Issue Source
+
+- **Repository:** msamad/group-events
+- **URL:** https://github.com/msamad/group-events
+- **Connected:** 2026-04-20
+- **Filters:** state=open
+
 ## Project Context
 
 - **Owner:** Mustansar Anwar ul Samad
