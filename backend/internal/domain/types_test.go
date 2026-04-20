@@ -50,13 +50,17 @@ func TestRolePermissions(t *testing.T) {
 func TestMembershipDelegatesRolePermissions(t *testing.T) {
 	t.Parallel()
 
-	membership := Membership{Role: RoleOrganizer}
+	membership := Membership{GroupID: "group-1", UserID: "user-1", Role: RoleOrganizer}
 	if !membership.CanCreateEvents() {
 		t.Fatal("expected organizer membership to create events")
 	}
 
 	if !membership.CanRespond() {
 		t.Fatal("expected organizer membership to respond")
+	}
+
+	if !membership.IsValid() {
+		t.Fatal("expected membership with role and identities to be valid")
 	}
 }
 
@@ -74,6 +78,25 @@ func TestEventHasValidSchedule(t *testing.T) {
 	invalid := Event{StartsAt: end, EndsAt: start}
 	if invalid.HasValidSchedule() {
 		t.Fatal("expected reversed event schedule to be invalid")
+	}
+}
+
+func TestGroupAndMemberValidation(t *testing.T) {
+	t.Parallel()
+
+	group := Group{ID: "group-1", Slug: "platform", Name: "Platform"}
+	if !group.IsValid() {
+		t.Fatal("expected group with required fields to be valid")
+	}
+
+	member := Member{ID: "user-1", DisplayName: "Mustansar"}
+	if !member.IsValid() {
+		t.Fatal("expected member with required fields to be valid")
+	}
+
+	invalidMember := Member{ID: "user-2"}
+	if invalidMember.IsValid() {
+		t.Fatal("expected member without display name to be invalid")
 	}
 }
 
@@ -96,5 +119,44 @@ func TestPollHasValidConfiguration(t *testing.T) {
 	poll.MaxSelections = 3
 	if poll.HasValidConfiguration() {
 		t.Fatal("expected poll with too many max selections to be invalid")
+	}
+}
+
+func TestEventAndPollValidation(t *testing.T) {
+	t.Parallel()
+
+	start := time.Date(2026, time.April, 20, 18, 0, 0, 0, time.UTC)
+	end := start.Add(90 * time.Minute)
+
+	event := Event{
+		ID:        "event-1",
+		GroupID:   "group-1",
+		Title:     "Quarterly planning",
+		StartsAt:  start,
+		EndsAt:    end,
+		CreatedBy: "user-1",
+	}
+	if !event.IsValid() {
+		t.Fatal("expected event with required fields and valid schedule to be valid")
+	}
+
+	poll := Poll{
+		ID:       "poll-1",
+		GroupID:  "group-1",
+		Question: "Pick a venue",
+		Options: []PollOption{
+			{ID: "one", Label: "Berlin"},
+			{ID: "two", Label: "London"},
+		},
+		MinSelections: 1,
+		MaxSelections: 1,
+		CreatedBy:     "user-1",
+	}
+	if !poll.IsValid() {
+		t.Fatal("expected poll with valid configuration to be valid")
+	}
+
+	if !poll.Options[0].IsValid() {
+		t.Fatal("expected poll option with id and label to be valid")
 	}
 }

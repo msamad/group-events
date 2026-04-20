@@ -34,6 +34,8 @@ func (r Role) CanRespond() bool {
 	return r == RoleOwner || r == RoleAdmin || r == RoleOrganizer || r == RoleMember
 }
 
+// Group is the top-level collaboration boundary.
+// Validation rule: ID, slug, and name must all be non-empty.
 type Group struct {
 	ID          GroupID    `json:"id"`
 	Slug        string     `json:"slug"`
@@ -44,11 +46,31 @@ type Group struct {
 	ArchivedAt  *time.Time `json:"archivedAt,omitempty"`
 }
 
+func (g Group) IsValid() bool {
+	return g.ID != "" && g.Slug != "" && g.Name != ""
+}
+
+// Member represents an identity that can join one or more groups.
+// Validation rule: ID and display name must be non-empty.
+type Member struct {
+	ID          UserID `json:"id"`
+	DisplayName string `json:"displayName"`
+	AvatarURL   string `json:"avatarUrl,omitempty"`
+}
+
+func (m Member) IsValid() bool {
+	return m.ID != "" && m.DisplayName != ""
+}
+
 type Membership struct {
 	GroupID  GroupID   `json:"groupId"`
 	UserID   UserID    `json:"userId"`
 	Role     Role      `json:"role"`
 	JoinedAt time.Time `json:"joinedAt"`
+}
+
+func (m Membership) IsValid() bool {
+	return m.GroupID != "" && m.UserID != "" && m.Role != ""
 }
 
 func (m Membership) CanCreateEvents() bool {
@@ -69,6 +91,14 @@ type Event struct {
 	EndsAt      time.Time `json:"endsAt"`
 	CreatedBy   UserID    `json:"createdBy"`
 	Cancelled   bool      `json:"cancelled"`
+}
+
+func (e Event) IsValid() bool {
+	if e.ID == "" || e.GroupID == "" || e.Title == "" || e.CreatedBy == "" {
+		return false
+	}
+
+	return e.HasValidSchedule()
 }
 
 func (e Event) HasValidSchedule() bool {
@@ -108,6 +138,14 @@ type Poll struct {
 	AllowsRevoting bool          `json:"allowsRevoting"`
 }
 
+func (p Poll) IsValid() bool {
+	if p.ID == "" || p.GroupID == "" || p.Question == "" || p.CreatedBy == "" {
+		return false
+	}
+
+	return p.HasValidConfiguration()
+}
+
 func (p Poll) HasValidConfiguration() bool {
 	if len(p.Options) == 0 {
 		return false
@@ -127,6 +165,10 @@ func (p Poll) HasValidConfiguration() bool {
 type PollOption struct {
 	ID    string `json:"id"`
 	Label string `json:"label"`
+}
+
+func (o PollOption) IsValid() bool {
+	return o.ID != "" && o.Label != ""
 }
 
 type Vote struct {
