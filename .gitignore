@@ -5,3 +5,42 @@
 .squad/sessions/
 # Squad: SubSquad activation file (local to this machine)
 .squad-workstream
+
+# Go
+bin/
+dist/
+coverage.out
+*.coverprofile
+*.test
+
+# Flutter and Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.fvm/
+.packages
+.pub/
+.pub-cache/
+build/
+coverage/
+pubspec.lock
+
+# Android and iOS build outputs
+android/.gradle/
+android/app/debug/
+android/app/profile/
+android/app/release/
+ios/Flutter/ephemeral/
+ios/Pods/
+
+# IDE and editor state
+.idea/
+.vscode/*
+!.vscode/settings.json
+*.iml
+*.swp
+*.swo
+
+# OS artifacts
+.DS_Store
+Thumbs.db
