@@ -4,20 +4,22 @@ class SduiComponent {
   const SduiComponent({
     required this.id,
     required this.type,
+    this.visible = true,
     this.title,
     this.body,
-    this.props = const <String, Object?>{},
+    this.data = const <String, Object?>{},
     this.actions = const <SduiAction>[],
     this.children = const <SduiComponent>[],
   });
 
   factory SduiComponent.fromJson(Map<String, Object?> json) {
     return SduiComponent(
-      id: json['id'] as String,
+      id: (json['id'] as String?) ?? '',
       type: json['type'] as String,
+      visible: (json['visible'] as bool?) ?? true,
       title: json['title'] as String?,
       body: json['body'] as String?,
-      props: _readObjectMap(json['props']),
+      data: _readObjectMap(json['data'] ?? json['props']),
       actions: _readObjectList(
         json['actions'],
       ).map(SduiAction.fromJson).toList(growable: false),
@@ -29,9 +31,10 @@ class SduiComponent {
 
   final String id;
   final String type;
+  final bool visible;
   final String? title;
   final String? body;
-  final Map<String, Object?> props;
+  final Map<String, Object?> data;
   final List<SduiAction> actions;
   final List<SduiComponent> children;
 
@@ -39,9 +42,10 @@ class SduiComponent {
     return <String, Object?>{
       'id': id,
       'type': type,
+      'visible': visible,
       if (title != null) 'title': title,
       if (body != null) 'body': body,
-      if (props.isNotEmpty) 'props': props,
+      if (data.isNotEmpty) 'data': data,
       if (actions.isNotEmpty)
         'actions': actions
             .map((action) => action.toJson())

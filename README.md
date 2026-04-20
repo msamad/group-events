@@ -27,3 +27,28 @@ The top-level folders are scaffolded so CI can target `backend/**` and `mobile/*
 - Backend CI runs on pushes to `main` and pull requests targeting `main` when backend or workflow files change.
 - The first workflow validates the Go backend with build, vet, and race-enabled tests.
 - Flutter app and package validation are intentionally deferred until both paths are green from a clean baseline.
+
+## Run The Stack Locally
+
+1. Start infrastructure and backend:
+
+```bash
+docker compose up -d postgres backend
+```
+
+2. In another shell, run backend migrations:
+
+```bash
+cd backend
+make migrate-up DATABASE_URL=postgres://postgres:postgres@localhost:5432/group_events?sslmode=disable
+```
+
+3. Start Flutter app:
+
+```bash
+cd mobile
+flutter pub get
+flutter run --dart-define=API_BASE_URL=http://localhost:8080
+```
+
+This gives a local dev loop with mobile + backend + Postgres.

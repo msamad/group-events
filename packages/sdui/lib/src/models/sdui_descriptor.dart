@@ -3,18 +3,19 @@ import 'sdui_component.dart';
 
 class SduiDescriptor {
   const SduiDescriptor({
-    required this.screenId,
-    required this.title,
+    required this.screen,
+    this.title = '',
     this.subtitle,
     this.components = const <SduiComponent>[],
     this.actions = const <SduiAction>[],
+    this.navigation = const <String, Object?>{},
     this.metadata = const <String, Object?>{},
   });
 
   factory SduiDescriptor.fromJson(Map<String, Object?> json) {
     return SduiDescriptor(
-      screenId: json['screenId'] as String,
-      title: json['title'] as String,
+      screen: (json['screen'] ?? json['screenId']) as String,
+      title: (json['title'] as String?) ?? '',
       subtitle: json['subtitle'] as String?,
       components: _readObjectList(
         json['components'],
@@ -22,20 +23,22 @@ class SduiDescriptor {
       actions: _readObjectList(
         json['actions'],
       ).map(SduiAction.fromJson).toList(growable: false),
+      navigation: _readObjectMap(json['navigation']),
       metadata: _readObjectMap(json['metadata']),
     );
   }
 
-  final String screenId;
+  final String screen;
   final String title;
   final String? subtitle;
   final List<SduiComponent> components;
   final List<SduiAction> actions;
+  final Map<String, Object?> navigation;
   final Map<String, Object?> metadata;
 
   Map<String, Object?> toJson() {
     return <String, Object?>{
-      'screenId': screenId,
+      'screen': screen,
       'title': title,
       if (subtitle != null) 'subtitle': subtitle,
       if (components.isNotEmpty)
@@ -46,6 +49,7 @@ class SduiDescriptor {
         'actions': actions
             .map((action) => action.toJson())
             .toList(growable: false),
+      if (navigation.isNotEmpty) 'navigation': navigation,
       if (metadata.isNotEmpty) 'metadata': metadata,
     };
   }

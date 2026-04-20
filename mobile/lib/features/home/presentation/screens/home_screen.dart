@@ -101,9 +101,9 @@ class HomeScreen extends StatelessWidget {
             SduiRenderer(
               descriptor: resolvedDescriptor,
               onAction: (action) {
-                final routeLabel = action.route == null
+                final routeLabel = action.endpoint == null
                     ? ''
-                    : ' -> ${action.route}';
+                    : ' -> ${action.endpoint}';
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

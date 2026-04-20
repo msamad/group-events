@@ -1,0 +1,46 @@
+name: Mobile CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - mobile/**
+      - packages/sdui/**
+      - .github/workflows/mobile-ci.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - mobile/**
+      - packages/sdui/**
+      - .github/workflows/mobile-ci.yml
+
+permissions:
+  contents: read
+
+jobs:
+  mobile-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+        working-directory: mobile
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze mobile app
+        run: flutter analyze
+
+      - name: Run mobile tests with coverage
+        run: flutter test --coverage

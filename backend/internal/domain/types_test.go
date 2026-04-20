@@ -9,12 +9,12 @@ func TestRolePermissions(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name            string
-		role            Role
-		manageGroup     bool
-		manageMembers   bool
-		createEvents    bool
-		respond         bool
+		name          string
+		role          Role
+		manageGroup   bool
+		manageMembers bool
+		createEvents  bool
+		respond       bool
 	}{
 		{name: "owner", role: RoleOwner, manageGroup: true, manageMembers: true, createEvents: true, respond: true},
 		{name: "admin", role: RoleAdmin, manageGroup: true, manageMembers: true, createEvents: true, respond: true},

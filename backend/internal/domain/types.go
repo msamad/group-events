@@ -126,16 +126,16 @@ type Participation struct {
 }
 
 type Poll struct {
-	ID             PollID        `json:"id"`
-	GroupID        GroupID       `json:"groupId"`
-	EventID        EventID       `json:"eventId,omitempty"`
-	Question       string        `json:"question"`
-	Options        []PollOption  `json:"options"`
-	MinSelections  int           `json:"minSelections"`
-	MaxSelections  int           `json:"maxSelections"`
-	ClosesAt       *time.Time    `json:"closesAt,omitempty"`
-	CreatedBy      UserID        `json:"createdBy"`
-	AllowsRevoting bool          `json:"allowsRevoting"`
+	ID             PollID       `json:"id"`
+	GroupID        GroupID      `json:"groupId"`
+	EventID        EventID      `json:"eventId,omitempty"`
+	Question       string       `json:"question"`
+	Options        []PollOption `json:"options"`
+	MinSelections  int          `json:"minSelections"`
+	MaxSelections  int          `json:"maxSelections"`
+	ClosesAt       *time.Time   `json:"closesAt,omitempty"`
+	CreatedBy      UserID       `json:"createdBy"`
+	AllowsRevoting bool         `json:"allowsRevoting"`
 }
 
 func (p Poll) IsValid() bool {
@@ -172,9 +172,9 @@ func (o PollOption) IsValid() bool {
 }
 
 type Vote struct {
-	PollID     PollID     `json:"pollId"`
-	OptionID   string     `json:"optionId"`
-	UserID     UserID     `json:"userId"`
+	PollID      PollID    `json:"pollId"`
+	OptionID    string    `json:"optionId"`
+	UserID      UserID    `json:"userId"`
 	SubmittedAt time.Time `json:"submittedAt"`
 }
 

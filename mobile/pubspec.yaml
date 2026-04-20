@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^3.0.3
+  http: ^1.2.2
   sdui:
     path: ../packages/sdui
 
@@ -41,6 +42,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mocktail: ^1.0.4
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

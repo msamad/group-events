@@ -8,6 +8,8 @@ Current baseline:
 - `internal/httpapi/router.go` exposes the initial `GET /health` route.
 - `internal/sdui` remains the server-owned UI descriptor seam.
 - `internal/domain` defines the first shared backend domain types for groups, memberships, events, polls, votes, and acknowledgements.
+- `migrations/` contains SQL migrations managed by goose.
+- `internal/testutil` contains shared Postgres-backed test helpers.
 
 Local validation:
 
@@ -16,3 +18,30 @@ go test ./...
 ```
 
 Run the command from this `backend/` directory.
+
+## Migrations
+
+Set `DATABASE_URL` and run:
+
+```bash
+make migrate-up
+make migrate-down
+```
+
+## Coverage
+
+Generate backend coverage report:
+
+```bash
+make test-cover
+```
+
+This writes `coverage.out` in the backend directory.
+
+## Run Locally
+
+```bash
+go run ./cmd/api
+```
+
+Default API address: `http://localhost:8080`.

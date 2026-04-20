@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS poll_votes;
+DROP TABLE IF EXISTS poll_options;
+DROP TABLE IF EXISTS polls;
+DROP TABLE IF EXISTS events;
+DROP TABLE IF EXISTS group_members;
+DROP TABLE IF EXISTS groups;
